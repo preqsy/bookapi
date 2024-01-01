@@ -1,13 +1,15 @@
+from typing import Any
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import Books
-from app.schemas import BookCreate, BookUpdate
+from app.schemas import BookUpdate
 
+"""
 class BookCrud():
     
-    def __init__(self, db : Session = Depends(get_db)):
+    def __init__(self, db : Session = Depends(get_db) ):
         self.db = db
         
     def query_isbn(self, isbn : int):
@@ -23,13 +25,13 @@ class BookCrud():
         single_book = self.db.query(Books).filter(Books.isbn == isbn).first()
         return single_book
     
-    def create(self, book : dict):
-        
-        self.db.add(book)
+    def create(self, book : Any):
+        new_book = Books(**book.dict())
+        self.db.add(new_book)
         self.db.commit()
-        return book
+        return "book"
     
-    def update_book(self, isbn : int, book:BookUpdate):
+    def update_book(self, isbn : int, book : BookUpdate):
         if self.query_isbn():
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Book with isbn: {isbn} already exist")
         update_book = self.query_isbn.first()
@@ -52,3 +54,4 @@ class BookCrud():
 book_crud = BookCrud()
     
     
+"""

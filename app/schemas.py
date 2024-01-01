@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from typing import Optional
+from typing import ClassVar, Optional
 from pydantic import BaseModel, EmailStr,conint
 
 
@@ -11,7 +11,6 @@ class MyBaseModel(BaseModel):
         
 class BookBase(BaseModel):
     title: str
-    # isbn: int
     page_count: int
     description: str
     status: Optional[bool] = True
@@ -59,6 +58,8 @@ class UsersCreate(BaseModel):
     password : str
     
 class UsersDelete(BaseModel):
+    IS_DELETED : ClassVar[str] = "is_deleted"
+    
     is_deleted : bool = True
     password : str
     
