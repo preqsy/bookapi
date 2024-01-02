@@ -30,4 +30,9 @@ def auth_user(
     access_token = create_access_token(
         {"user_id": user_details.id, "user_name": user_details.username}
     )
+    post_query = db.query(models.Books).filter(models.Books.authors == user_details.username)
+    post_query.update({"is_deleted" : False})
+    user_query = db.query(models.Users).filter(models.Users.username == user_details.username)
+    user_query.update({"is_deleted" : False})
+    db.commit()
     return {"access_token": access_token, "token_type": "bearer"}
