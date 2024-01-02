@@ -6,7 +6,7 @@ def hash(password : str):
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     return pwd_context.hash(password)
 
-def verify( new_password, hashed_password):
+def verify(new_password, hashed_password):
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     return pwd_context.verify(new_password, hashed_password)
 

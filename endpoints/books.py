@@ -23,13 +23,13 @@ def get_all_books(
     current_user: int = Depends(get_current_user),
     search: Optional[str] = "",
 ):
-    all_books = db.query(models.Books).all()
+    # all_books = db.query(models.Books).filter(models.Books.is_deleted == False).all()
 
     result = (
         db.query(models.Books, func.count(models.Like.book_isbn).label("likes"))
         .join(models.Like, models.Like.book_isbn == models.Books.isbn, isouter=True)
         .group_by(models.Books.id)
-        .filter(models.Books.title.contains(search))
+        .filter(models.Books.title.contains(search)).filter(models.Books.is_deleted == False)
         .all()
     )
 
@@ -37,10 +37,10 @@ def get_all_books(
     for post in result:
         data.append(post._asdict())
 
-    if all_books == []:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=f"No books found"
-        )
+    # if all_books == []:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_404_NOT_FOUND, detail=f"No books found"
+    #     )
 
     return data
 
