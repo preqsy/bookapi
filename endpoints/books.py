@@ -10,9 +10,6 @@ from app.oauth2 import get_current_user
 from app.database import get_db
 from app.schemas import BookCreate, BookUpdate, BookResponse, BookOut
 from app.utils import generate_isbn
-from rq import Queue
-from redis import Redis
-
 
 router = APIRouter(prefix="/books")
 
@@ -23,24 +20,18 @@ def get_all_books(
     current_user: int = Depends(get_current_user),
     search: Optional[str] = "",
 ):
-    # all_books = db.query(models.Books).filter(models.Books.is_deleted == False).all()
-
     result = (
         db.query(models.Books, func.count(models.Like.book_isbn).label("likes"))
         .join(models.Like, models.Like.book_isbn == models.Books.isbn, isouter=True)
         .group_by(models.Books.id)
-        .filter(models.Books.title.contains(search)).filter(models.Books.is_deleted == False)
+        .filter(models.Books.title.contains(search))
+        .filter(models.Books.is_deleted == False)
         .all()
     )
 
     data = []
     for post in result:
         data.append(post._asdict())
-
-    # if all_books == []:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_404_NOT_FOUND, detail=f"No books found"
-    #     )
 
     return data
 
@@ -60,7 +51,6 @@ def create_book(
         )
     db.add(new_post)
     db.commit()
-    # book_crud.create(book)
     return new_post
 
 

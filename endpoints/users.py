@@ -30,7 +30,6 @@ def create_user(user: UsersCreate, db: Session = Depends(get_db)):
     new_user = models.Users(**user.dict())
     db.add(new_user)
     db.commit()
-    db.refresh(new_user)
     return new_user
 
 

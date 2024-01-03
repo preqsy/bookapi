@@ -4,3 +4,6 @@ venv
 .idea
 alembic/__pycache__
 alembic/versions/__pycache__
+app/config.py
+crud/__pycache__
+endpoints/__pycache__
