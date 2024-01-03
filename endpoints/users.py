@@ -30,7 +30,6 @@ def create_user(user: UsersCreate, db: Session = Depends(get_db)):
     new_user = models.Users(**user.dict())
     db.add(new_user)
     db.commit()
-    db.refresh(new_user)
     return new_user
 
 
@@ -41,9 +40,7 @@ def soft_delete(
     current_user=Depends(get_current_user),
 ):
     user_query = db.query(models.Users).filter(current_user.id == models.Users.id)
-    user_posts_query = db.query(models.Books).filter(
-        models.Books.authors == current_user.username
-    )
+    
     if not user_query:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="User not found"
@@ -56,6 +53,9 @@ def soft_delete(
             detail="Password is needed before account deletion",
         )
     user_query.update({user.IS_DELETED: user.is_deleted})
-    user_posts_query.delete()
+    user_posts_query = db.query(models.Books).filter(
+        models.Books.authors == current_user.username
+    )
+    user_posts_query.update({user.IS_DELETED : user.is_deleted})
     db.commit()
     return "Account Deleted"

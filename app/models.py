@@ -22,6 +22,7 @@ class Books(Base):
     authors = Column(
         String, ForeignKey("users.username", ondelete="CASCADE"), nullable=False
     )
+    is_deleted = Column(Boolean, nullable=False, server_default="FALSE")
     owner = relationship("Users")
 
 
