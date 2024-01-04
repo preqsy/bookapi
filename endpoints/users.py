@@ -45,14 +45,18 @@ def soft_delete(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="User not found"
         )
+    if not user.password:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Password is needed before deleting account"
+        )
     if not verify(
         new_password=user.password, hashed_password=user_query.first().password
     ):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Password is needed before account deletion",
+            detail="Password not correct",
         )
-    user_query.update({user.IS_DELETED: user.is_deleted})
+    user_query.update({user.IS_DELETED: user.is_deleted, user.REASON: user.reason_for_deletion})
     user_posts_query = db.query(models.Books).filter(
         models.Books.authors == current_user.username
     )

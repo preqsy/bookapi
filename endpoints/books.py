@@ -18,21 +18,21 @@ router = APIRouter(prefix="/books")
 def get_all_books(
     db: Session = Depends(get_db),
     current_user: int = Depends(get_current_user),
+    limit: Optional[int] = 10,
     search: Optional[str] = "",
 ):
     result = (
         db.query(models.Books, func.count(models.Like.book_isbn).label("likes"))
         .join(models.Like, models.Like.book_isbn == models.Books.isbn, isouter=True)
         .group_by(models.Books.id)
-        .filter(models.Books.title.contains(search))
-        .filter(models.Books.is_deleted == False)
+        .filter(models.Books.title.contains(search) | models.Books.authors.contains(search))
+        .filter(models.Books.is_deleted == False).limit(limit)
         .all()
     )
 
     data = []
     for post in result:
         data.append(post._asdict())
-
     return data
 
 

@@ -35,6 +35,7 @@ class Users(Base):
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
     is_deleted = Column(Boolean, nullable=False, server_default='FALSE')
+    reason_for_deletion = Column(String, nullable=False, server_default='')
 
 
 class Like(Base):
