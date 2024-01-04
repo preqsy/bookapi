@@ -1,7 +1,8 @@
 from datetime import datetime
+from enum import Enum
 
 from typing import ClassVar, Optional
-from pydantic import BaseModel, EmailStr, conint
+from pydantic import BaseModel, EmailStr, conint, root_validator
 
 
 class MyBaseModel(BaseModel):
@@ -63,13 +64,33 @@ class UsersCreate(BaseModel):
     username: str
     email: EmailStr
     password: str
+    
+class ReasonsEnum(str, Enum):
+    FOUND_ALTERNATIVE = "found an alternative"
+    NOT_ENOUGH_FEATURES = "missing features"
+    PRIVACY_ISSUES = "privacy concerns"
+    HARD_TO_USE = "difficult to use"
+    NOT_ENOUGH_OPTIONS = "limited options"
+    SECURITY_CONCERNS = "security worries"
+    TESTING_OTHER_SERVICES = "trying other services"
 
 
 class UsersDelete(BaseModel):
     IS_DELETED: ClassVar[str] = "is_deleted"
+    REASON: ClassVar[str] = "reason_for_deletion"
 
     is_deleted: bool = True
+    reason_for_deletion: ReasonsEnum
     password: str
+    
+    @root_validator(pre=True)
+    def check_reason(cls, values):
+        reason = values.get(cls.REASON)
+        if not reason:
+            raise ValueError("Reason for deletion is required")
+        # if reason not in ReasonsEnum.__members__.values():
+        #     raise ValueError("Reason for deletion is not valid")
+        return values
 
 
 class LoginDetail(BaseModel):
