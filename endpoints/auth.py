@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app import models
+from app.schemas import BookUpdate, UsersDelete
 from app.utils import verify
 from app.oauth2 import create_access_token
 
@@ -31,8 +32,8 @@ def auth_user(
         {"user_id": user_details.id, "user_name": user_details.username}
     )
     post_query = db.query(models.Books).filter(models.Books.authors == user_details.username)
-    post_query.update({"is_deleted" : False})
+    post_query.update({BookUpdate.IS_DELETED : False})
     user_query = db.query(models.Users).filter(models.Users.username == user_details.username)
-    user_query.update({"is_deleted" : False})
+    user_query.update({UsersDelete.IS_DELETED : False})
     db.commit()
     return {"access_token": access_token, "token_type": "bearer"}

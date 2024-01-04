@@ -22,11 +22,14 @@ class BookCreate(BookBase):
 
 
 class BookUpdate(BaseModel):
+    IS_DELETED : ClassVar[str] = "is_deleted"
+    
     title: str
     page_count: int
     description: str
     status: Optional[bool] = True
     categories: str
+    is_deleted: Optional[bool] = False
 
 
 class UsersData(MyBaseModel):
