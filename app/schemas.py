@@ -43,19 +43,17 @@ class BookResponse(BaseModel):
     title: str
     description: str
     authors: str
-    isbn: int
-    # description : str
-
+    id: int
 
 class Book(BookResponse):
     categories: str
     published_date: datetime
     page_count: int
 
-
 class BookOut(BaseModel):
     Books: Book
     likes: int
+    reviews : int
 
 
 class UsersCreate(BaseModel):
@@ -88,8 +86,6 @@ class UsersDelete(BaseModel):
         reason = values.get(cls.REASON)
         if not reason:
             raise ValueError("Reason for deletion is required")
-        # if reason not in ReasonsEnum.__members__.values():
-        #     raise ValueError("Reason for deletion is not valid")
         return values
 
 
@@ -109,5 +105,7 @@ class TokenData(BaseModel):
 
 
 class Like(BaseModel):
-    book_isbn: int
     dir: conint(ge=0, le=1)
+    
+class ReviewCreate(BaseModel):
+    review: str

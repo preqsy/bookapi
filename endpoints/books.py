@@ -17,16 +17,23 @@ router = APIRouter(prefix="/books")
 @router.get("/", response_model=List[BookOut])
 def get_all_books(
     db: Session = Depends(get_db),
-    current_user: int = Depends(get_current_user),
     limit: Optional[int] = 10,
     search: Optional[str] = "",
 ):
     result = (
-        db.query(models.Books, func.count(models.Like.book_isbn).label("likes"))
-        .join(models.Like, models.Like.book_isbn == models.Books.isbn, isouter=True)
+        db.query(
+            models.Books,
+            func.count(models.Like.book_id).label("likes"),
+            func.count(models.Reviews.book_id).label("reviews"),
+        )
+        .join(models.Like, models.Like.book_id == models.Books.id, isouter=True)
+        .outerjoin(models.Reviews, models.Reviews.book_id == models.Books.id)
         .group_by(models.Books.id)
-        .filter(models.Books.title.contains(search) | models.Books.authors.contains(search))
-        .filter(models.Books.is_deleted == False).limit(limit)
+        .filter(
+            models.Books.title.contains(search) | models.Books.authors.contains(search)
+        )
+        .filter(models.Books.is_deleted == False)
+        .limit(limit)
         .all()
     )
 
@@ -54,39 +61,45 @@ def create_book(
     return new_post
 
 
-@router.get("/{isbn}", response_model=BookOut)
+@router.get("/{id}", status_code=status.HTTP_200_OK, response_model=BookOut)
 def single_book(
-    isbn: int,
+    id: int,
     db: Session = Depends(get_db),
-    current_user: int = Depends(get_current_user),
 ):
+
     book = (
-        db.query(models.Books, func.count(models.Like.book_isbn).label("likes"))
-        .join(models.Like, models.Like.book_isbn == models.Books.isbn, isouter=True)
+        db.query(
+            models.Books,
+            func.count(models.Like.book_id).label("likes"),
+            func.count(models.Reviews.book_id).label("reviews"),
+        )
+        .outerjoin(models.Like, models.Like.book_id == models.Books.id)
+        .outerjoin(models.Reviews, models.Reviews.book_id == models.Books.id)
         .group_by(models.Books.id)
-        .filter(models.Books.isbn == isbn)
+        .filter(models.Books.id == id)
         .first()
     )
+
     if not book:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Book with ISBN: {isbn} does not exist",
+            detail=f"Book with ISBN: {id} does not exist",
         )
     return book
 
 
-@router.delete("/{isbn}", response_model=List[BookResponse])
+@router.delete("/{id}", response_model=List[BookResponse])
 def delete_book(
-    isbn: int,
+    id: int,
     db: Session = Depends((get_db)),
     current_user: int = Depends(get_current_user),
 ):
-    book_query = db.query(models.Books).filter(models.Books.isbn == isbn)
+    book_query = db.query(models.Books).filter(models.Books.id == id)
     book = book_query.first()
     if not book:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Book with isbn: {isbn} does not exist",
+            detail=f"Book with isbn: {id} does not exist",
         )
 
     if book.authors != current_user.username:
@@ -101,20 +114,20 @@ def delete_book(
 
 
 @router.put(
-    "/{isbn}", response_model=BookResponse, status_code=status.HTTP_202_ACCEPTED
+    "/{id}", response_model=BookResponse, status_code=status.HTTP_202_ACCEPTED
 )
 def update_book(
     book: BookUpdate,
-    isbn: int,
+    id: int,
     db: Session = Depends(get_db),
     current_user: int = Depends(get_current_user),
 ):
-    book_query = db.query(models.Books).filter(models.Books.isbn == isbn)
+    book_query = db.query(models.Books).filter(models.Books.id == id)
     updated_book = book_query.first()
     if not updated_book:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Book with isbn: {isbn} does not exist",
+            detail=f"Book with isbn: {id} does not exist",
         )
     if updated_book.authors != current_user.username:
         raise HTTPException(
@@ -126,3 +139,4 @@ def update_book(
     db.commit()
 
     return book_query.first()
+

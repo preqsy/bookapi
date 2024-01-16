@@ -24,6 +24,7 @@ class Books(Base):
     )
     is_deleted = Column(Boolean, nullable=False, server_default="FALSE")
     owner = relationship("Users")
+    reviews = relationship("Reviews", back_populates="book")
 
 
 class Users(Base):
@@ -41,9 +42,9 @@ class Users(Base):
 class Like(Base):
     __tablename__ = "likes"
 
-    book_isbn = Column(
+    book_id = Column(
         BIGINT,
-        ForeignKey("books.isbn", ondelete="CASCADE"),
+        ForeignKey("books.id", ondelete="CASCADE"),
         primary_key=True,
         nullable=False,
     )
@@ -53,5 +54,14 @@ class Like(Base):
         primary_key=True,
         nullable=False,
     )
+    
+    
+class Reviews(Base):
+    __tablename__ = "reviews"
+    id = Column(Integer, primary_key=True, nullable=False)
+    book_id = Column(BIGINT, ForeignKey("books.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    review = Column(String, nullable=False)
+    book = relationship("Books", back_populates="reviews")
 
 
