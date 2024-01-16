@@ -7,7 +7,7 @@ Read: Retrieve information about books in the directory.
 Update: Modify details of existing books.
 Delete: Remove books from the directory.
 
-Also JWTToken for authentication of users
+Also JWTtoken for authentication of users
 
 Technologies Used
 
