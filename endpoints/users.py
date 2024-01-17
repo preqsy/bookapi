@@ -25,6 +25,8 @@ def get_users(db: Session = Depends(get_db)):
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=UsersData)
 def create_user(user: UsersCreate, db: Session = Depends(get_db)):
+    if not user.password or not user.email or not user.username or not user.first_name or not user.last_name:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Input all fields")
     hashed_password = hash(user.password)
     user.password = hashed_password
     new_user = models.Users(**user.dict())

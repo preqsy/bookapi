@@ -26,11 +26,11 @@ def get_all_books(
             func.count(models.Like.book_id).label("likes"),
             func.count(models.Reviews.book_id).label("reviews"),
         )
-        .join(models.Like, models.Like.book_id == models.Books.id, isouter=True)
+        .outerjoin(models.Like, models.Like.book_id == models.Books.id)
         .outerjoin(models.Reviews, models.Reviews.book_id == models.Books.id)
         .group_by(models.Books.id)
         .filter(
-            models.Books.title.contains(search) | models.Books.authors.contains(search)
+            models.Books.title.contains(search.upper()) | models.Books.authors.contains(search.lower())
         )
         .filter(models.Books.is_deleted == False)
         .limit(limit)
