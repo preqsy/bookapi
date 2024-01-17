@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 
 from typing import ClassVar, Optional
-from pydantic import BaseModel, EmailStr, conint, root_validator
+from pydantic import BaseModel, EmailStr, conint, constr, root_validator
 
 
 class MyBaseModel(BaseModel):
@@ -11,7 +11,7 @@ class MyBaseModel(BaseModel):
 
 
 class BookBase(BaseModel):
-    title: str
+    title: constr(to_upper=True)
     page_count: int
     description: str
     status: Optional[bool] = True
@@ -25,7 +25,7 @@ class BookCreate(BookBase):
 class BookUpdate(BaseModel):
     IS_DELETED : ClassVar[str] = "is_deleted"
     
-    title: str
+    title: constr(to_upper=True)
     page_count: int
     description: str
     status: Optional[bool] = True
@@ -36,6 +36,7 @@ class BookUpdate(BaseModel):
 class UsersData(MyBaseModel):
     first_name: str
     last_name: str
+    username : str
     email: EmailStr
 
 
@@ -59,7 +60,7 @@ class BookOut(BaseModel):
 class UsersCreate(BaseModel):
     first_name: str
     last_name: str
-    username: str
+    username: constr(to_lower=True)
     email: EmailStr
     password: str
     
@@ -109,3 +110,10 @@ class Like(BaseModel):
     
 class ReviewCreate(BaseModel):
     review: str
+    rating: conint(strict=True, ge=1, le=5) 
+    
+class ReviewResponse(BaseModel):
+    user_id: int
+    review: str
+    rating: int
+    owner : UsersData
