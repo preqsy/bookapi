@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.orm import Session
 
 from app.oauth2 import get_current_user
-from app.schemas import UsersCreate, UsersData, UsersDelete
+from schemas.users import UsersCreate, UsersData, UsersDelete
 from app.database import get_db
 from app import models
 from app.utils import hash, verify
@@ -25,6 +25,8 @@ def get_users(db: Session = Depends(get_db)):
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=UsersData)
 def create_user(user: UsersCreate, db: Session = Depends(get_db)):
+    if not user.password or not user.email or not user.username or not user.first_name or not user.last_name:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Input all fields")
     hashed_password = hash(user.password)
     user.password = hashed_password
     new_user = models.Users(**user.dict())

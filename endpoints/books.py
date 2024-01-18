@@ -4,11 +4,10 @@ from fastapi import Depends, HTTPException, status, Response, APIRouter
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-
 import app.models as models
 from app.oauth2 import get_current_user
 from app.database import get_db
-from app.schemas import BookCreate, BookUpdate, BookResponse, BookOut
+from schemas.books import BookCreate, BookUpdate, BookResponse, BookOut
 from app.utils import generate_isbn
 
 router = APIRouter(prefix="/books")
@@ -26,11 +25,11 @@ def get_all_books(
             func.count(models.Like.book_id).label("likes"),
             func.count(models.Reviews.book_id).label("reviews"),
         )
-        .join(models.Like, models.Like.book_id == models.Books.id, isouter=True)
+        .outerjoin(models.Like, models.Like.book_id == models.Books.id)
         .outerjoin(models.Reviews, models.Reviews.book_id == models.Books.id)
         .group_by(models.Books.id)
         .filter(
-            models.Books.title.contains(search) | models.Books.authors.contains(search)
+            models.Books.title.contains(search.upper()) | models.Books.authors.contains(search.lower())
         )
         .filter(models.Books.is_deleted == False)
         .limit(limit)

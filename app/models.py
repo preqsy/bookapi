@@ -62,6 +62,8 @@ class Reviews(Base):
     book_id = Column(BIGINT, ForeignKey("books.id", ondelete="CASCADE"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     review = Column(String, nullable=False)
+    rating = Column(Integer, nullable=False)
     book = relationship("Books", back_populates="reviews")
+    owner = relationship("Users")
 
 
