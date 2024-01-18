@@ -5,7 +5,7 @@ from app import models
 from app.database import get_db
 from app.oauth2 import get_current_user
 
-from app.schemas import ReviewCreate, ReviewResponse
+from schemas.review import ReviewCreate, ReviewResponse
 
 router = APIRouter(prefix="/books/{id}/reviews", tags=["Reviews"])
 

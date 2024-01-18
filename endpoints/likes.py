@@ -1,7 +1,8 @@
 from fastapi import HTTPException, Depends, APIRouter, status
 from sqlalchemy.orm import Session
 
-from app import models, schemas
+from app import models
+from schemas.others import Like
 from app.database import get_db
 from app.oauth2 import get_current_user
 
@@ -11,7 +12,7 @@ router = APIRouter(prefix="/books/{id}/like", tags=["Likes"])
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def like_post(
     id: str,
-    like: schemas.Like,
+    like: Like,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):

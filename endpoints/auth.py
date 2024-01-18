@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app import models
-from app.schemas import BookUpdate, UsersDelete
+from schemas.books import BookUpdate
+from schemas.users import UsersDelete
 from app.utils import verify
 from app.oauth2 import create_access_token
 

@@ -6,7 +6,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
-from . import schemas
+from schemas.others import TokenData
 from app.database import get_db
 from . import models
 from .config import settings
@@ -29,7 +29,7 @@ def verify_access_token(token, credentials_exception):
         user_name: str = payload.get("user_name")
         if id is None:
             raise credentials_exception
-        token_data = schemas.TokenData(id=id, username=user_name)
+        token_data = TokenData(id=id, username=user_name)
     except JWTError:
         raise credentials_exception
 

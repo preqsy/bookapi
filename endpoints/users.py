@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.orm import Session
 
 from app.oauth2 import get_current_user
-from app.schemas import UsersCreate, UsersData, UsersDelete
+from schemas.users import UsersCreate, UsersData, UsersDelete
 from app.database import get_db
 from app import models
 from app.utils import hash, verify

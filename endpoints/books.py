@@ -4,11 +4,10 @@ from fastapi import Depends, HTTPException, status, Response, APIRouter
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-
 import app.models as models
 from app.oauth2 import get_current_user
 from app.database import get_db
-from app.schemas import BookCreate, BookUpdate, BookResponse, BookOut
+from schemas.books import BookCreate, BookUpdate, BookResponse, BookOut
 from app.utils import generate_isbn
 
 router = APIRouter(prefix="/books")
