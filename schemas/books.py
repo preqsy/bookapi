@@ -56,3 +56,6 @@ class BookOut(BaseModel):
     Books: Book
     likes: int
     reviews : int
+    
+class SearchCategories(BaseModel):
+    categories : str
