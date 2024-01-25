@@ -24,6 +24,7 @@ def get_all_books(
             models.Books,
             func.count(models.Like.book_id).label("likes"),
             func.count(models.Reviews.book_id).label("reviews"),
+            func.avg(models.Reviews.rating).label("average_rating")
         )
         .outerjoin(models.Like, models.Like.book_id == models.Books.id)
         .outerjoin(models.Reviews, models.Reviews.book_id == models.Books.id)
@@ -42,6 +43,34 @@ def get_all_books(
     return data
 
 
+@router.get("/{id}", status_code=status.HTTP_200_OK, response_model=BookOut)
+def single_book(
+    id: int,
+    db: Session = Depends(get_db),
+):
+
+    book = (
+        db.query(
+            models.Books,
+            func.count(models.Like.book_id).label("likes"),
+            func.count(models.Reviews.book_id).label("reviews"),
+            func.avg(models.Reviews.rating).label("average_rating")
+        )
+        .outerjoin(models.Like, models.Like.book_id == models.Books.id)
+        .outerjoin(models.Reviews, models.Reviews.book_id == models.Books.id)
+        .group_by(models.Books.id)
+        .filter(models.Books.id == id)
+        .first()
+    )
+
+    if not book:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Book with ISBN: {id} does not exist",
+        )
+
+    return book
+
 @router.post("/", response_model=BookResponse, status_code=status.HTTP_201_CREATED)
 def create_book(
     book: BookCreate,
@@ -58,33 +87,6 @@ def create_book(
     db.add(new_post)
     db.commit()
     return new_post
-
-
-@router.get("/{id}", status_code=status.HTTP_200_OK, response_model=BookOut)
-def single_book(
-    id: int,
-    db: Session = Depends(get_db),
-):
-
-    book = (
-        db.query(
-            models.Books,
-            func.count(models.Like.book_id).label("likes"),
-            func.count(models.Reviews.book_id).label("reviews"),
-        )
-        .outerjoin(models.Like, models.Like.book_id == models.Books.id)
-        .outerjoin(models.Reviews, models.Reviews.book_id == models.Books.id)
-        .group_by(models.Books.id)
-        .filter(models.Books.id == id)
-        .first()
-    )
-
-    if not book:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Book with ISBN: {id} does not exist",
-        )
-    return book
 
 
 @router.delete("/{id}", response_model=List[BookResponse])
