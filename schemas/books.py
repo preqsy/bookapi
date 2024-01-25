@@ -58,3 +58,5 @@ class BookOut(BaseModel):
     reviews : int
     average_rating : Optional[float] = None
 
+class SearchCategories(BaseModel):
+    categories: constr(to_lower=True)
