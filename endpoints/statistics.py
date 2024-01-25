@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy import desc, func
 from sqlalchemy.orm import Session
@@ -5,10 +6,12 @@ from app import models
 
 from app.database import  get_db
 from app.models import Books
+from schemas.books import BookOut
 
-router = APIRouter(prefix="/books")
+router = APIRouter(prefix="/books/stats")
 
-@router.get("/popular-books")
+# @router.get("/popular-books")
+@router.get("/popular-books",response_model=List[BookOut])
 def get_popular_books(db: Session = Depends(get_db)):
     most_liked_books = (
         db.query(
@@ -19,7 +22,9 @@ def get_popular_books(db: Session = Depends(get_db)):
             .group_by(Books.id)
             .order_by(func.count(models.Like.book_id).desc())
             .all()
-        
-        
     )
-    return most_liked_books
+    data = []
+    for post in most_liked_books:
+        data.append(post._asdict())
+    return data
+    # return most_liked_books
