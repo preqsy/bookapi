@@ -56,6 +56,5 @@ class BookOut(BaseModel):
     Books: Book
     likes: int
     reviews : int
-feat-added-average-rating
     average_rating : Optional[float] = None
 
