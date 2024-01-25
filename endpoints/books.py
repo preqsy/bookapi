@@ -7,7 +7,7 @@ from sqlalchemy import func
 import app.models as models
 from app.oauth2 import get_current_user
 from app.database import get_db
-from schemas.books import BookCreate, BookUpdate, BookResponse, BookOut
+from schemas.books import BookCreate, BookUpdate, BookResponse, BookOut, SearchCategories
 from app.utils import generate_isbn
 
 router = APIRouter(prefix="/books")
@@ -141,3 +141,7 @@ def update_book(
 
     return book_query.first()
 
+@router.post("/categories")
+def get_books_by_categories(book_cat:SearchCategories, db: Session = Depends(get_db), limit:Optional[int] = 10):
+    book_query = db.query(models.Books).filter(models.Books.categories == book_cat.categories).limit(limit).all()
+    return book_query
