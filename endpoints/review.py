@@ -28,6 +28,8 @@ def add_review(
 @router.get("/", status_code=status.HTTP_200_OK, response_model=List[ReviewResponse])
 def get_reviews(id: str, db: Session = Depends(get_db)):
     book_query = db.query(models.Books).filter(models.Books.id == id).first()
+    if not book_query:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Book with id:{id} doesn't exist")
     if book_query.is_deleted == True:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Book not found"

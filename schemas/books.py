@@ -42,10 +42,10 @@ class BookUpdate(BaseModel):
     is_deleted: Optional[bool] = False
 
 class BookResponse(BaseModel):
+    id: int
     title: str
     description: str
     authors: str
-    id: int
 
 class Book(BookResponse):
     categories: str
@@ -55,7 +55,8 @@ class Book(BookResponse):
 class BookOut(BaseModel):
     Books: Book
     likes: int
-    reviews : Optional[int] | None = None
-    
+    reviews : int
+    average_rating : Optional[float] = None
+
 class SearchCategories(BaseModel):
-    categories : str
+    categories: constr(to_lower=True)

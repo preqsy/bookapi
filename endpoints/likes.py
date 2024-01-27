@@ -42,7 +42,7 @@ def like_post(
     else:
         if not liked:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Vote doesn't exist"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Like doesn't exist"
             )
         like_query.delete()
         response = "Unliked"
