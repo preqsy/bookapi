@@ -25,6 +25,7 @@ class Books(Base):
     is_deleted = Column(Boolean, nullable=False, server_default="FALSE")
     owner = relationship("Users")
     reviews = relationship("Reviews", back_populates="book")
+    # likes = relationship("Like", back_populates=)
 
 
 class Users(Base):

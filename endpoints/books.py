@@ -12,7 +12,6 @@ from app.utils import generate_isbn
 
 router = APIRouter(prefix="/books")
 
-
 @router.get("/", response_model=List[BookOut])
 def get_all_books(
     db: Session = Depends(get_db),
