@@ -10,7 +10,6 @@ from schemas.books import BookOut
 
 router = APIRouter(prefix="/books/stats")
 
-# @router.get("/popular-books")
 @router.get("/popular-books",response_model=List[BookOut])
 def get_popular_books(db: Session = Depends(get_db)):
     most_liked_books = (
@@ -27,4 +26,3 @@ def get_popular_books(db: Session = Depends(get_db)):
     for post in most_liked_books:
         data.append(post._asdict())
     return data
-    # return most_liked_books

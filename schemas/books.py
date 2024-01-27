@@ -55,7 +55,7 @@ class Book(BookResponse):
 class BookOut(BaseModel):
     Books: Book
     likes: int
-    reviews : int
+    reviews : Optional[int] | None = None
     
 class SearchCategories(BaseModel):
     categories : str
