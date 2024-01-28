@@ -22,7 +22,6 @@ def get_all_books(
         db.query(
             models.Books,
             func.count(models.Like.book_id).label("likes"),
-            func.count(models.Reviews.book_id).label("reviews"),
             func.avg(models.Reviews.rating).label("average_rating")
         )
         .outerjoin(models.Like, models.Like.book_id == models.Books.id)

@@ -55,7 +55,6 @@ class Book(BookResponse):
 class BookOut(BaseModel):
     Books: Book
     likes: int
-    reviews : int
     average_rating : Optional[float] = None
 
 class SearchCategories(BaseModel):
